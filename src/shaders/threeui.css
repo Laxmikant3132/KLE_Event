@@ -1,0 +1,16 @@
+.threeui-background,
+.landing-page-frame {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  min-width: 0;
+  min-height: 0;
+  overflow: hidden;
+  background: #05070a;
+}
+
+.landing-page-frame iframe {
+  border: 0;
+  width: 100%;
+  height: 100%;
+}

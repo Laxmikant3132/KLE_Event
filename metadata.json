@@ -1,0 +1,6 @@
+{
+  "name": "Event Registration Portal",
+  "description": "A modern, cinematic, 3D interactive event registration website transformed from the Kage WebGL experience.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}

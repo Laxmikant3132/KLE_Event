@@ -34,7 +34,7 @@ html{ -webkit-text-size-adjust:100%; scroll-behavior:smooth; }
 body{
   margin:0; background:var(--ink); color:var(--bone);
   font-family:'Plus Jakarta Sans',system-ui,-apple-system,'Helvetica Neue',sans-serif;
-  font-weight:300; font-size:16px; line-height:1.6;
+  font-weight:500; font-size:16px; line-height:1.6;
   -webkit-font-smoothing:antialiased; -moz-osx-font-smoothing:grayscale;
   overflow-x:hidden;
 }
@@ -46,8 +46,7 @@ button{font:inherit;color:inherit;background:none;border:0;cursor:pointer}
 
 /* ============================================================= layers */
 #gl{
-  position:fixed; inset:0; width:100%; height:100%;
-  display:block; z-index:0; background:#05070a;
+  display:none;
 }
 #bg-video{
   position:fixed; inset:0; width:100%; height:100%;
@@ -103,21 +102,113 @@ h1,h2,h3,h4{ font-family:'Syne',sans-serif; font-weight:700; margin:0; letter-sp
 .word-reveal.rv-in .word{ opacity:1; transform:none; }
 
 /* ============================================================= preloader */
+/* ============================================================= preloader */
 #pre{
-  position:fixed; inset:0; z-index:100; background:#05070a;
+  position:fixed; inset:0; z-index:100;
+  background:radial-gradient(ellipse 120% 100% at 50% 60%, #040d1a 0%, #02060d 60%, #000 100%);
   display:flex; align-items:center; justify-content:center;
-  transition:opacity .8s var(--ease), visibility .8s;
+  transition:opacity 1s var(--ease), visibility 1s;
+  overflow:hidden;
 }
 #pre.done{ opacity:0; visibility:hidden; pointer-events:none; }
-.pre-in{ width:min(420px,74vw); text-align:center; }
-.pre-mark{ margin:0 auto 24px; width:48px; height:48px; opacity:.95; }
-.pre-mark svg{ width:100%; height:100%; display:block; }
-.pre-tag{ font-size:12px; letter-spacing:.3em; color:var(--bone-dim); margin-bottom:20px; font-weight:500; }
-.pre-bar{ position:relative; height:2px; background:rgba(223,231,224,.14); overflow:hidden; border-radius:2px; }
-.pre-bar i{ position:absolute; inset:0 100% 0 0; background:linear-gradient(90deg, var(--ember), var(--vermilion)); transition:right .35s linear; }
-.pre-meta{ display:flex; justify-content:space-between; margin-top:12px;
-  font-size:11px; letter-spacing:.18em; text-transform:uppercase; color:var(--muted); }
-.pre-meta b{ font-weight:600; color:var(--bone); font-variant-numeric:tabular-nums; }
+
+/* Animated background grid */
+#pre::before{
+  content:''; position:absolute; inset:0;
+  background-image:
+    linear-gradient(rgba(0,210,255,.04) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(0,210,255,.04) 1px, transparent 1px);
+  background-size:60px 60px;
+  animation:gridScroll 8s linear infinite;
+}
+@keyframes gridScroll{ from{transform:translateY(0)} to{transform:translateY(60px)} }
+
+.pre-in{ width:min(480px,84vw); text-align:center; position:relative; z-index:2; }
+
+/* Logo ring container */
+.pre-logo-wrap{
+  position:relative; width:160px; height:160px;
+  margin:0 auto 36px; display:flex; align-items:center; justify-content:center;
+}
+.pre-ring{
+  position:absolute; inset:0; border-radius:50%;
+  border:1px solid rgba(0,210,255,.25);
+  animation:ringPulse 2.4s var(--ease-io) infinite;
+}
+.pre-ring:nth-child(2){ inset:-16px; border-color:rgba(0,210,255,.15); animation-delay:.4s; }
+.pre-ring:nth-child(3){ inset:-32px; border-color:rgba(0,210,255,.08); animation-delay:.8s; }
+@keyframes ringPulse{
+  0%,100%{ transform:scale(1); opacity:.8; }
+  50%{ transform:scale(1.06); opacity:.3; }
+}
+.pre-logo-img{
+  width:110px; height:110px; border-radius:50%; object-fit:cover;
+  border:3px solid rgba(0,210,255,.5);
+  box-shadow:0 0 30px rgba(0,210,255,.4), 0 0 60px rgba(0,210,255,.15), inset 0 0 20px rgba(0,0,0,.5);
+  animation:logoBreath 3s var(--ease-io) infinite;
+}
+@keyframes logoBreath{
+  0%,100%{ box-shadow:0 0 30px rgba(0,210,255,.4), 0 0 60px rgba(0,210,255,.15); }
+  50%{ box-shadow:0 0 50px rgba(0,210,255,.7), 0 0 90px rgba(0,210,255,.3); }
+}
+
+/* Spinning arc */
+.pre-arc{
+  position:absolute; inset:-6px; border-radius:50%;
+  border:2px solid transparent;
+  border-top-color:#00d2ff;
+  border-right-color:rgba(0,210,255,.3);
+  animation:spin 1.6s linear infinite;
+}
+
+.pre-title{
+  font-family:'Syne',sans-serif; font-size:clamp(28px,5vw,42px); font-weight:900;
+  letter-spacing:.12em; text-transform:uppercase;
+  color:#fff;
+  margin-bottom:4px;
+  animation:titleGlow 2s var(--ease-io) infinite alternate;
+}
+@keyframes titleGlow{
+  from{ opacity:.85; } to{ opacity:1; }
+}
+.pre-sub{
+  font-size:11px; letter-spacing:.32em; text-transform:uppercase;
+  color:var(--bone-dim); margin-bottom:32px; font-weight:500;
+}
+
+/* Progress bar */
+.pre-bar{
+  position:relative; height:3px;
+  background:rgba(255,255,255,.08);
+  border-radius:999px; overflow:hidden; margin-bottom:14px;
+}
+.pre-bar i{
+  position:absolute; inset:0 100% 0 0;
+  background:linear-gradient(90deg, #00d2ff, #38ef7d);
+  border-radius:999px; transition:right .35s linear;
+  box-shadow:0 0 12px rgba(0,210,255,.8);
+}
+.pre-meta{
+  display:flex; justify-content:space-between;
+  font-size:11px; letter-spacing:.18em; text-transform:uppercase; color:var(--muted);
+}
+.pre-meta b{ font-weight:700; color:var(--cyan-glow); font-variant-numeric:tabular-nums; }
+
+/* Particle dots */
+.pre-dots{ display:flex; justify-content:center; gap:6px; margin-top:20px; }
+.pre-dot{
+  width:4px; height:4px; border-radius:50%;
+  background:rgba(0,210,255,.5);
+  animation:dotBounce .9s var(--ease-io) infinite;
+}
+.pre-dot:nth-child(2){ animation-delay:.15s; }
+.pre-dot:nth-child(3){ animation-delay:.3s; }
+.pre-dot:nth-child(4){ animation-delay:.45s; }
+.pre-dot:nth-child(5){ animation-delay:.6s; }
+@keyframes dotBounce{
+  0%,100%{ transform:translateY(0); opacity:.4; }
+  50%{ transform:translateY(-6px); opacity:1; background:#38ef7d; }
+}
 
 /* ============================================================= nav */
 .nav{
@@ -224,13 +315,28 @@ h1,h2,h3,h4{ font-family:'Syne',sans-serif; font-weight:700; margin:0; letter-sp
   display:grid; grid-template-columns:repeat(4,1fr); gap:clamp(14px,2vw,36px);
   border-top:1px solid var(--line-soft); padding-top:20px;
 }
-.chip{ display:flex; gap:14px; align-items:flex-start; cursor:pointer; }
-.chip .num{ line-height:1; flex:0 0 auto; transition:color .4s, transform .4s var(--ease-out); }
+.chip{ 
+  display:flex; gap:14px; align-items:flex-start; cursor:pointer;
+  background: rgba(4, 8, 16, 0.7);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  padding: 16px 20px;
+  border-radius: 16px;
+  border: 1px solid rgba(223, 231, 224, 0.1);
+  transition: transform .4s var(--ease-out), border-color .4s, background .4s, box-shadow .4s;
+}
+.chip:hover {
+  background: rgba(9, 17, 30, 0.85);
+  border-color: rgba(0, 210, 255, 0.3);
+  transform: translateY(-4px);
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.7), 0 0 20px rgba(0, 210, 255, 0.15);
+}
+.chip .num{ line-height:1; flex:0 0 auto; transition:color .4s, transform .4s var(--ease-out); text-shadow:0 2px 12px rgba(0,0,0,0.9); }
 .chip .tx{ min-width:0; padding-top:2px; }
-.chip b{ display:block; font-size:11px; font-weight:600; letter-spacing:.18em; text-transform:uppercase;
-  color:var(--bone); margin-bottom:4px; transition:color .4s;
-  text-shadow:0 1px 16px rgba(3,6,8,.9); }
-.chip p{ margin:0; font-size:12px; line-height:1.5; color:#b8c9d5; max-width:24ch; transition:color .4s; }
+.chip b{ display:block; font-size:12px; font-weight:700; letter-spacing:.18em; text-transform:uppercase;
+  color:#fff; margin-bottom:6px; transition:color .4s;
+  text-shadow:0 2px 12px rgba(0,0,0,0.9); }
+.chip p{ margin:0; font-size:13px; line-height:1.5; color:#c0cdd6; max-width:24ch; transition:color .4s; font-weight: 500; text-shadow:0 2px 8px rgba(0,0,0,0.9); }
 .chip:hover .num{ color:var(--ember); transform:translate3d(0,-2px,0); }
 .chip:hover b{ color:#fff; }
 .chip:hover p{ color:var(--bone); }
@@ -600,7 +706,7 @@ h1,h2,h3,h4{ font-family:'Syne',sans-serif; font-weight:700; margin:0; letter-sp
 }
 </style>
 </head>
-<body>
+<body class="no-webgl">
 
 <canvas id="gl" aria-hidden="true"></canvas>
 <video id="bg-video" autoplay loop muted playsinline src="/Background.mp4" aria-hidden="true"></video>
@@ -611,16 +717,29 @@ h1,h2,h3,h4{ font-family:'Syne',sans-serif; font-weight:700; margin:0; letter-sp
 <!-- ============================================================ preloader -->
 <div id="pre">
   <div class="pre-in">
-    <div class="pre-mark">
-      <svg viewBox="0 0 44 44" fill="none" aria-hidden="true">
-        <circle cx="22" cy="22" r="16" stroke="#e0231c" stroke-width="1.8"/>
-        <path d="M14 22h16M22 14v16" stroke="#dfe7e0" stroke-width="1.8" stroke-linecap="round"/>
-      </svg>
+    <!-- Logo with animated rings -->
+    <div class="pre-logo-wrap">
+      <div class="pre-ring"></div>
+      <div class="pre-ring"></div>
+      <div class="pre-ring"></div>
+      <div class="pre-arc"></div>
+      <img class="pre-logo-img" src="/images/logo.jpeg" alt="SAH Logo">
     </div>
-    <div class="pre-tag" id="pre-event-name">NEXUS 2026</div>
+    <!-- Title -->
+    <div class="pre-title">SAH 2026</div>
+    <div class="pre-sub" id="pre-event-name">Smart AI Hackathon</div>
+    <!-- Progress -->
     <div class="pre-bar"><i id="pre-fill"></i></div>
     <div class="pre-meta">
       <span>Loading Experience</span><b><span id="pre-pct">0</span>%</b>
+    </div>
+    <!-- Bouncing dots -->
+    <div class="pre-dots">
+      <div class="pre-dot"></div>
+      <div class="pre-dot"></div>
+      <div class="pre-dot"></div>
+      <div class="pre-dot"></div>
+      <div class="pre-dot"></div>
     </div>
   </div>
 </div>
@@ -628,10 +747,7 @@ h1,h2,h3,h4{ font-family:'Syne',sans-serif; font-weight:700; margin:0; letter-sp
 <!-- ============================================================ nav -->
 <header class="nav" id="nav">
   <a class="brand" href="#home" data-cursor>
-    <svg viewBox="0 0 44 44" fill="none" aria-hidden="true">
-      <circle cx="22" cy="22" r="16" fill="#00d2ff" fill-opacity=".9"/>
-      <path d="M12 22h20M22 12v20" stroke="#040810" stroke-width="2.5" stroke-linecap="round"/>
-    </svg>
+    <img src="/images/logo.jpeg" alt="SAH Logo" style="width: 36px; height: 36px; border-radius: 50%; object-fit: cover; border: 2px solid var(--vermilion);">
     <span class="brand-tx"><b id="nav-brand-title">SMART AI HACKATHONS</b><i>KLE SOCIETY'S COLLEGE OF BCA GOKAK</i></span>
   </a>
   <nav class="nav-links" id="navlinks">
@@ -650,34 +766,34 @@ h1,h2,h3,h4{ font-family:'Syne',sans-serif; font-weight:700; margin:0; letter-sp
 
 <!-- ============================================================ SECTION 1 — HERO -->
 <section class="hero" id="hero-sec" data-cam="0">
-  <div class="hero-top">
-    <div class="eyebrow" data-rv="fade">
+  <div class="hero-top" style="text-align: center; margin: 0 auto; display: flex; flex-direction: column; align-items: center; justify-content: center; height: 100%;">
+    <div class="eyebrow" data-rv="fade" style="justify-content: center; margin-bottom: 24px;">
       <span class="dot"></span>
-      <span id="hero-event-name">SMART AI HACKATHONS 2026</span>
+      <span id="hero-event-name">KLE SOCIETY'S COLLEGE OF BCA GOKAK</span>
     </div>
-    <h1 class="display h-hero">
-      <span class="mask-line"><span>Smart AI</span></span>
-      <span class="mask-line"><span>Hackathon</span></span>
-      <span class="mask-line"><span>Challenge.</span></span>
+    <h1 class="display h-hero" data-rv="fade" style="color: var(--cyan-glow); margin-bottom: 10px; font-size: clamp(60px, 8vw, 120px); font-weight: 900; text-transform: uppercase;">
+      <span class="mask-line"><span>SAH 2026</span></span>
     </h1>
-    <p class="hero-sub" data-rv="up">
-      Unleash your creativity and AI problem-solving skills! Exclusively for BCA 1st, 3rd, and 5th SEM students of KLE Society's College of BCA Gokak.
+    <h2 class="display h-sec" data-rv="up" style="color: #fff; letter-spacing: 0.1em; margin-bottom: 24px;">
+      <span class="mask-line"><span>SMART AI HACKATHON</span></span>
+    </h2>
+    <p class="hero-sub" data-rv="up" style="font-style: italic; color: #b0cedd; font-size: clamp(16px, 1.5vw, 22px); margin-bottom: 40px; font-weight: 500; text-shadow: 0 4px 20px rgba(0,0,0,0.8), 0 2px 5px rgba(0,0,0,0.6);">
+      "Where Creativity Meets Artificial Intelligence."
     </p>
 
     <!-- Event Details Badges -->
-    <div class="hero-meta-badge" data-rv="up">
-      <div class="meta-pill">📅 <strong id="disp-event-date">SEPTEMBER 10–11, 2026</strong></div>
-      <div class="meta-pill">🕒 <strong id="disp-event-time">10:00 AM - 03:00 PM</strong></div>
-      <div class="meta-pill">📍 <strong id="disp-event-loc">KLE Society's College of BCA Gokak</strong></div>
+    <div class="hero-meta-badge" data-rv="up" style="justify-content: center; gap: 24px; margin-bottom: 50px;">
+      <div class="meta-pill">📅 <strong id="disp-event-date" style="letter-spacing: 0.1em;">10 - 11 SEPTEMBER 2026</strong></div>
+      <div class="meta-pill">📍 <strong id="disp-event-loc" style="letter-spacing: 0.1em;">KLE BCA GOKAK</strong></div>
     </div>
 
-    <!-- 2 CTAs -->
-    <div class="hero-ctas" data-rv="up">
+    <!-- CTAs -->
+    <div class="hero-ctas" data-rv="up" style="justify-content: center; gap: 24px;">
       <a class="btn-hero-primary" href="https://forms.gle/mBBvufRp4hEhJBiZ8" target="_blank" rel="noopener noreferrer" data-cursor>
         REGISTER NOW ↗
       </a>
       <a class="btn-hero-secondary" href="#posters" data-cursor>
-        VIEW EVENT POSTERS ↓
+        EXPLORE THE EXPERIENCE >
       </a>
     </div>
   </div>
@@ -1699,16 +1815,16 @@ function boot() {
 
   let pct = 0;
   const step = () => {
-    pct += 25;
+    pct += 2;
     if (preFill) preFill.style.right = (100 - pct) + '%';
     if (prePct) prePct.textContent = pct;
     if (pct < 100) {
-      setTimeout(step, 40);
+      setTimeout(step, 28);
     } else {
       setTimeout(() => {
         preEl?.classList.add('done');
         document.body.classList.remove('is-locked');
-      }, 180);
+      }, 1200);
     }
   };
 
